@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧟‍♂️ Zombie Street Shootout</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: url('zombie.jpg') center/cover no-repeat fixed;
+            color: #00ff41;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        body.day-mode {
+            filter: brightness(1.3) contrast(0.9);
+            color: #2c3e50;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to bottom, 
+                    transparent 0%, 
+                    rgba(0, 0, 0, 0.3) 20%, 
+                    rgba(0, 0, 0, 0.7) 60%, 
+                    rgba(0, 0, 0, 0.8) 100%);
+            z-index: -1;
+        }
+        
+        body.day-mode .overlay {
+            background: 
+                linear-gradient(to bottom, 
+                    transparent 0%, 
+                    rgba(255, 255, 255, 0.1) 20%, 
+                    rgba(255, 255, 255, 0.3) 60%, 
+                    rgba(255, 255, 255, 0.4) 100%);
+        }
+        
+        .mode-toggle {
+            position: fixed;
+            top: 2px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0040;
+            color: #ff0040;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .mode-toggle:hover {
+            background: #ff0040;
+            color: #000;
+        }
+        
+        body.day-mode .mode-toggle {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        body.day-mode .mode-toggle:hover {
+            background: #3498db;
+            color: #fff;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .title {
+            font-family: 'Creepster', cursive;
+            font-size: 4em;
+            text-align: center;
+            color: #ff0040;
+            text-shadow: 
+                0 0 10px #000,
+                0 0 20px #000,
+                0 0 30px #ff0040, 
+                0 0 60px #ff0040,
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            position: relative;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #00ff41;
+            text-shadow: 
+                0 0 5px #000,
+                0 0 10px #000,
+                0 0 20px #00ff41,
+                1px 1px 2px rgba(0, 0, 0, 0.8);
+            position: relative;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(3px);
+        }
+        
+        body.day-mode .subtitle {
+            color: #2c3e50;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px rgba(44, 62, 80, 0.5),
+                1px 1px 2px rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #00ff41;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+        
+        body.day-mode .panel {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #3498db;
+            box-shadow: 0 0 30px rgba(52, 152, 219, 0.3);
+        }
+        
+        .panel h3 {
+            color: #ff0040;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 15px #ff0040;
+        }
+        
+        body.day-mode .panel h3 {
+            color: #e74c3c;
+            text-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+        }
+        
+        .controls {
+            text-align: center;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        select:hover, button:hover {
+            background: rgba(0, 255, 65, 0.2);
+            border-color: #ff0040;
+            color: #ff0040;
+            transform: translateY(-2px);
+        }
+        
+        body.day-mode select, body.day-mode button {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #3498db;
+            color: #2c3e50;
+        }
+        
+        body.day-mode select:hover, body.day-mode button:hover {
+            background: rgba(52, 152, 219, 0.2);
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .stats {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(0, 255, 65, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00ff41;
+        }
+        
+        body.day-mode .stat-item {
+            background: rgba(52, 152, 219, 0.1);
+            border-left-color: #3498db;
+        }
+        
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+            border: 2px solid #00ff41;
+        }
+        
+        body.day-mode .health-bar {
+            border-color: #3498db;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0040, #ff6b6b);
+            transition: width 0.5s ease;
+        }
+        
+        .zombie-health-fill {
+            background: linear-gradient(90deg, #8e44ad, #9b59b6);
+        }
+        
+        .weapons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .weapon-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .weapon-card:hover {
+            border-color: #ff0040;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 64, 0.4);
+        }
+        
+        .weapon-card.selected {
+            border-color: #ff0040;
+            background: rgba(255, 0, 64, 0.2);
+        }
+        
+        body.day-mode .weapon-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #3498db;
+            color: #2c3e50;
+        }
+        
+        body.day-mode .weapon-card:hover {
+            border-color: #e74c3c;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+        }
+        
+        body.day-mode .weapon-card.selected {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
+        .ammo-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #ff0040;
+            color: #fff;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .infinite-ammo {
+            background: #00ff41;
+            color: #000;
+        }
+        
+        .combat-log {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+        }
+        
+        body.day-mode .combat-log {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: #3498db;
+            color: #2c3e50;
+        }
+        
+        .log-entry {
+            margin: 8px 0;
+            padding: 8px;
+            border-left: 3px solid #00ff41;
+            padding-left: 15px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .log-entry.damage {
+            border-left-color: #ff0040;
+            color: #ff6b6b;
+        }
+        
+        .log-entry.success {
+            border-left-color: #00ff41;
+            color: #00ff41;
+        }
+        
+        .log-entry.warning {
+            border-left-color: #ffd700;
+            color: #ffd700;
+        }
+        
+        body.day-mode .log-entry.damage {
+            color: #e74c3c;
+        }
+        
+        body.day-mode .log-entry.success {
+            color: #27ae60;
+        }
+        
+        body.day-mode .log-entry.warning {
+            color: #f39c12;
+        }
+        
+        .final-results {
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #ff0040;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        body.day-mode .final-results {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #3498db;
+        }
+        
+        .result-winner {
+            font-size: 2.5em;
+            color: #00ff41;
+            text-shadow: 0 0 20px #00ff41;
+        }
+        
+        .result-loser {
+            font-size: 2.5em;
+            color: #ff0040;
+            text-shadow: 0 0 20px #ff0040;
+        }
+        
+        body.day-mode .result-winner {
+            color: #27ae60;
+            text-shadow: 0 0 20px rgba(39, 174, 96, 0.5);
+        }
+        
+        body.day-mode .result-loser {
+            color: #e74c3c;
+            text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+        
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #00ff41;
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+        
+        body.day-mode .particle {
+            background: #3498db;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2.5em;
+            }
+            
+            .weapons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="floating-particles" id="particles"></div>
+    
+    <button class="mode-toggle" onclick="toggleDayNight()">
+        🌙 Night Mode
+    </button>
+    
+    <div class="container">
+        <h1 class="title">ZOMBIE STREET SHOOTOUT</h1>
+        <p class="subtitle">⚡ WEAPONS EDITION ⚡</p>
+        
+        <div class="game-board">
+            <div class="panel">
+                <h3>🎮 CONTROLS</h3>
+                <div class="controls">
+                    <label>🔫 Select Weapon:</label>
+                    <select id="weaponSelect" onchange="selectWeapon()">
+                        <option value="pistol">🔫 Glock 19</option>
+                        <option value="shotgun">💥 Remington 870</option>
+                        <option value="rifle">🎯 AK-47</option>
+                        <option value="flamethrower">🔥 Flamethrower</option>
+                        <option value="knife">🔪 Combat Knife</option>
+                        <option value="axe">🪓 Fire Axe</option>
+                    </select>
+                    
+                    <label>🧟‍♂️ Select Target:</label>
+                    <select id="zombieSelect" onchange="selectZombie()">
+                        <option value="0">🧟‍♂️ Walker</option>
+                        <option value="1">🧟‍♀️ Runner</option>
+                        <option value="2">🧟‍♂️ Brute</option>
+                    </select>
+                    
+                    <button onclick="startBattle()" id="battleBtn">🚨 START BATTLE</button>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>👤 SURVIVOR</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>Name:</span>
+                        <span id="playerName">Ali</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Health:</span>
+                        <span id="playerHealth">100/100</span>
+                    </div>
+                    <div class="health-bar">
+                        <div class="health-fill" id="playerHealthBar" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-item">
+                        <span>Weapon:</span>
+                        <span id="currentWeaponDisplay">🔫 Glock 19</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Ammo:</span>
+                        <span id="currentAmmoDisplay" class="ammo-indicator">15/15</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h3>🧟‍♂️ THREAT</h3>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span>Enemy:</span>
+                        <span id="zombieName">🧟‍♂️ Walker</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Type:</span>
+                        <span id="zombieType">Slow Walker</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Health:</span>
+                        <span id="zombieHealth">50/50</span>
+                    </div>
+                    <div class="health-bar">
+                        <div class="zombie-health-fill" id="zombieHealthBar" style="width: 100%"></div>
+                    </div>
+                    <div class="stat-item">
+                        <span>Damage:</span>
+                        <span id="zombieDamage">10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>🔫 WEAPON ARSENAL</h3>
+            <div class="weapons-grid" id="weaponsGrid">
+            </div>
+        </div>
+        
+        <div class="combat-log" id="combatLog">
+            <div class="log-entry success">🎮 Welcome to Zombie Street Shootout! Select your weapon and target to begin...</div>
+            <div class="log-entry">📋 Tips: Use ranged weapons for heavy damage, melee weapons never run out of ammo!</div>
+            <div class="log-entry warning">⚠️ When ranged weapons run out of ammo, you'll automatically switch to your knife!</div>
+        </div>
+        
+        <div id="finalResults" class="final-results" style="display: none;">
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            player: {
+                name: "Ali",
+                health: 100,
+                maxHealth: 100,
+                currentWeapon: "pistol",
+                inventory: {
+                    pistol: {
+                        name: "🔫 Glock 19",
+                        damage: 25,
+                        ammo: 15,
+                        maxAmmo: 15,
+                        type: "ranged",
+                        description: "Reliable sidearm with moderate damage"
+                    },
+                    shotgun: {
+                        name: "💥 Remington 870",
+                        damage: 50,
+                        ammo: 8,
+                        maxAmmo: 8,
+                        type: "ranged",
+                        description: "Devastating close-range weapon"
+                    },
+                    rifle: {
+                        name: "🎯 AK-47",
+                        damage: 40,
+                        ammo: 30,
+                        maxAmmo: 30,
+                        type: "ranged",
+                        description: "High-capacity assault rifle"
+                    },
+                    flamethrower: {
+                        name: "🔥 Flamethrower",
+                        damage: 60,
+                        ammo: 5,
+                        maxAmmo: 5,
+                        type: "ranged",
+                        description: "Burns zombies to crisp"
+                    },
+                    knife: {
+                        name: "🔪 Combat Knife",
+                        damage: 15,
+                        ammo: Infinity,
+                        maxAmmo: Infinity,
+                        type: "melee",
+                        description: "Silent and deadly, never runs out"
+                    },
+                    axe: {
+                        name: "🪓 Fire Axe",
+                        damage: 35,
+                        ammo: Infinity,
+                        maxAmmo: Infinity,
+                        type: "melee",
+                        description: "Heavy melee weapon for crushing skulls"
+                    }
+                }
+            },
+            zombieTypes: [
+                {
+                    name: "🧟‍♂️ Walker",
+                    type: "Slow Walker",
+                    health: 50,
+                    maxHealth: 50,
+                    damage: 10,
+                    description: "Slow but persistent undead"
+                },
+                {
+                    name: "🧟‍♀️ Runner",
+                    type: "Fast Runner",
+                    health: 75,
+                    maxHealth: 75,
+                    damage: 20,
+                    description: "Quick and aggressive zombie"
+                },
+                {
+                    name: "🧟‍♂️ Brute",
+                    type: "Armored Brute",
+                    health: 120,
+                    maxHealth: 120,
+                    damage: 30,
+                    description: "Heavily armored tank zombie"
+                }
+            ],
+            currentZombieIndex: 0,
+            currentZombie: null,
+            battleInProgress: false,
+            isDayMode: false
+        };
+
+        function initGame() {
+            gameState.currentZombie = JSON.parse(JSON.stringify(gameState.zombieTypes[gameState.currentZombieIndex]));
+            updateUI();
+            populateWeapons();
+            createFloatingParticles();
+        }
+
+        function createFloatingParticles() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                if (particlesContainer.children.length < 15) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    particlesContainer.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 8000);
+                }
+            }, 800);
+        }
+
+        function toggleDayNight() {
+            gameState.isDayMode = !gameState.isDayMode;
+            document.body.classList.toggle('day-mode');
+            
+            const toggleBtn = document.querySelector('.mode-toggle');
+            if (gameState.isDayMode) {
+                toggleBtn.innerHTML = '☀️ Day Mode';
+                addLogEntry("☀️ Switched to Day Mode - The sun reveals more threats...", "warning");
+            } else {
+                toggleBtn.innerHTML = '🌙 Night Mode';
+                addLogEntry("🌙 Switched to Night Mode - Darkness conceals the undead...", "warning");
+            }
+        }
+
+        function populateWeapons() {
+            const weaponsGrid = document.getElementById('weaponsGrid');
+            weaponsGrid.innerHTML = '';
+            
+            Object.keys(gameState.player.inventory).forEach(weaponKey => {
+                const weapon = gameState.player.inventory[weaponKey];
+                const weaponCard = document.createElement('div');
+                weaponCard.className = `weapon-card ${weaponKey === gameState.player.currentWeapon ? 'selected' : ''}`;
+                weaponCard.onclick = () => selectWeaponByKey(weaponKey);
+                
+                const ammoDisplay = weapon.ammo === Infinity ? '∞' : `${weapon.ammo}/${weapon.maxAmmo}`;
+                const ammoClass = weapon.ammo === Infinity ? 'infinite-ammo' : '';
+                
+                weaponCard.innerHTML = `
+                    <h4>${weapon.name}</h4>
+                    <div><strong>Damage:</strong> ${weapon.damage}</div>
+                    <div><strong>Ammo:</strong> <span class="ammo-indicator ${ammoClass}">${ammoDisplay}</span></div>
+                    <div><strong>Type:</strong> ${weapon.type}</div>
+                    <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">${weapon.description}</div>
+                `;
+                
+                weaponsGrid.appendChild(weaponCard);
+            });
+        }
+
+        function selectWeapon() {
+            const weaponSelect = document.getElementById('weaponSelect');
+            selectWeaponByKey(weaponSelect.value);
+        }
+
+        function selectWeaponByKey(weaponKey) {
+            gameState.player.currentWeapon = weaponKey;
+            document.getElementById('weaponSelect').value = weaponKey;
+            updateUI();
+            populateWeapons();
+            addLogEntry(`🔄 Switched to ${gameState.player.inventory[weaponKey].name}`, "success");
+        }
+
+        function selectZombie() {
+            const zombieSelect = document.getElementById('zombieSelect');
+            gameState.currentZombieIndex = parseInt(zombieSelect.value);
+            gameState.currentZombie = JSON.parse(JSON.stringify(gameState.zombieTypes[gameState.currentZombieIndex]));
+            updateUI();
+            addLogEntry(`🎯 Target acquired: ${gameState.currentZombie.name}`, "warning");
+        }
+
+        function updateUI() {
+            document.getElementById('playerName').textContent = gameState.player.name;
+            document.getElementById('playerHealth').textContent = `${gameState.player.health}/${gameState.player.maxHealth}`;
+            document.getElementById('playerHealthBar').style.width = `${(gameState.player.health / gameState.player.maxHealth) * 100}%`;
+            
+            const currentWeapon = gameState.player.inventory[gameState.player.currentWeapon];
+            document.getElementById('currentWeaponDisplay').textContent = currentWeapon.name;
+            
+            const ammoDisplay = currentWeapon.ammo === Infinity ? '∞' : `${currentWeapon.ammo}/${currentWeapon.maxAmmo}`;
+            const ammoElement = document.getElementById('currentAmmoDisplay');
+            ammoElement.textContent = ammoDisplay;
+            ammoElement.className = `ammo-indicator ${currentWeapon.ammo === Infinity ? 'infinite-ammo' : ''}`;
+            
+            document.getElementById('zombieName').textContent = gameState.currentZombie.name;
+            document.getElementById('zombieType').textContent = gameState.currentZombie.type;
+            document.getElementById('zombieHealth').textContent = `${gameState.currentZombie.health}/${gameState.currentZombie.maxHealth}`;
+            document.getElementById('zombieHealthBar').style.width = `${(gameState.currentZombie.health / gameState.currentZombie.maxHealth) * 100}%`;
+            document.getElementById('zombieDamage').textContent = gameState.currentZombie.damage;
+        }
+
+        function addLogEntry(message, type = '') {
+            const combatLog = document.getElementById('combatLog');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = message;
+            combatLog.appendChild(logEntry);
+            combatLog.scrollTop = combatLog.scrollHeight;
+        }
+
+        function attackZombie() {
+            const weapon = gameState.player.inventory[gameState.player.currentWeapon];
+            
+            if (weapon.ammo > 0) {
+                gameState.currentZombie.health -= weapon.damage;
+                addLogEntry(`⚔️ Attacking with ${weapon.name}! Dealt ${weapon.damage} damage.`, "damage");
+                
+                if (weapon.ammo !== Infinity) {
+                    weapon.ammo--;
+                    addLogEntry(`📦 Ammo remaining: ${weapon.ammo}`, "");
+                }
+                
+                if (gameState.currentZombie.health <= 0) {
+                    gameState.currentZombie.health = 0;
+                    addLogEntry(`💀 ${gameState.currentZombie.name} has been eliminated!`, "success");
+                    return true;
+                }
+            } else {
+                addLogEntry(`❌ No ammo left in ${weapon.name}!`, "warning");
+                addLogEntry(`🔄 Switching to backup: ${gameState.player.inventory.knife.name}`, "warning");
+                
+                gameState.currentZombie.health -= gameState.player.inventory.knife.damage;
+                addLogEntry(`🔪 Melee attack! Dealt ${gameState.player.inventory.knife.damage} damage.`, "damage");
+                
+                if (gameState.currentZombie.health <= 0) {
+                    gameState.currentZombie.health = 0;
+                    addLogEntry(`💀 ${gameState.currentZombie.name} has been eliminated!`, "success");
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function zombieAttack() {
+            addLogEntry(`🧟‍♂️ ${gameState.currentZombie.name} attacks back!`, "");
+            gameState.player.health -= gameState.currentZombie.damage;
+            addLogEntry(`💔 You took ${gameState.currentZombie.damage} damage!`, "damage");
+            
+            if (gameState.player.health <= 0) {
+                gameState.player.health = 0;
+                addLogEntry(`💀 ${gameState.player.name} has been overwhelmed!`, "damage");
+                return true;
+            }
+            
+            return false;
+        }
+
+        function startBattle() {
+            if (gameState.battleInProgress) return;
+            
+            gameState.battleInProgress = true;
+            document.getElementById('battleBtn').textContent = '⚔️ BATTLE IN PROGRESS...';
+            document.getElementById('battleBtn').disabled = true;
+            
+            addLogEntry(`🚨 COMBAT INITIATED! ${gameState.player.name} vs ${gameState.currentZombie.name}`, "warning");
+            
+            let round = 1;
+            
+            const battleInterval = setInterval(() => {
+                addLogEntry(`⚡ ROUND ${round}`, "success");
+                
+                const zombieDefeated = attackZombie();
+                updateUI();
+                populateWeapons();
+                
+                if (zombieDefeated) {
+                    clearInterval(battleInterval);
+                    endBattle(true);
+                    return;
+                }
+                
+                setTimeout(() => {
+                    const playerDefeated = zombieAttack();
+                    updateUI();
+                    
+                    if (playerDefeated) {
+                        clearInterval(battleInterval);
+                        endBattle(false);
+                        return;
+                    }
+                    
+                    round++;
+                    
+                    if (round > 20) {
+                        clearInterval(battleInterval);
+                        addLogEntry("⏰ Combat timeout - both fighters are exhausted!", "warning");
+                        endBattle(null);
+                    }
+                }, 1000);
+                
+            }, 2000);
+        }
+
+        function endBattle(playerWon) {
+            gameState.battleInProgress = false;
+            document.getElementById('battleBtn').textContent = '🔄 RESET & BATTLE AGAIN';
+            document.getElementById('battleBtn').disabled = false;
+            document.getElementById('battleBtn').onclick = resetBattle;
+            
+            const finalResults = document.getElementById('finalResults');
+            let resultHTML = '<h3>🏁 FINAL BATTLE RESULTS 🏁</h3>';
+            
+            if (playerWon === true) {
+                resultHTML += `
+                    <div class="result-winner">✅ VICTORY!</div>
+                    <p>🎉 ${gameState.player.name} survived the encounter!</p>
+                    <p>💪 You lived to fight another day!</p>
+                `;
+            } else if (playerWon === false) {
+                resultHTML += `
+                    <div class="result-loser">💀 DEFEAT</div>
+                    <p>⚰️ ${gameState.player.name} fell in battle...</p>
+                    <p>🩸 The apocalypse claimed another victim...</p>
+                `;
+            } else {
+                resultHTML += `
+                    <div class="result-winner">⚡ STALEMATE</div>
+                    <p>🤝 Both fighters are too exhausted to continue...</p>
+                `;
+            }
+            
+            resultHTML += `
+                <div style="margin-top: 20px;">
+                    <div><strong>👤 Player Final Health:</strong> ${gameState.player.health}/${gameState.player.maxHealth}</div>
+                    <div><strong>🧟‍♂️ Zombie Final Health:</strong> ${gameState.currentZombie.health}/${gameState.currentZombie.maxHealth}</div>
+                    <div><strong>🔫 Weapon Used:</strong> ${gameState.player.inventory[gameState.player.currentWeapon].name}</div>
+                    <div><strong>📦 Remaining Ammo:</strong> ${gameState.player.inventory[gameState.player.currentWeapon].ammo === Infinity ? '∞' : gameState.player.inventory[gameState.player.currentWeapon].ammo}</div>
+                </div>
+            `;
+            
+            finalResults.innerHTML = resultHTML;
+            finalResults.style.display = 'block';
+            
+            addLogEntry("🎮 Battle completed! Use the reset button to fight again.", "success");
+        }
+
+        function resetBattle() {
+            gameState.player.health = gameState.player.maxHealth;
+            gameState.currentZombie = JSON.parse(JSON.stringify(gameState.zombieTypes[gameState.currentZombieIndex]));
+            
+            Object.keys(gameState.player.inventory).forEach(weaponKey => {
+                const weapon = gameState.player.inventory[weaponKey];
+                weapon.ammo = weapon.maxAmmo;
+            });
+            
+            document.getElementById('finalResults').style.display = 'none';
+            document.getElementById('battleBtn').textContent = '🚨 START BATTLE';
+            document.getElementById('battleBtn').onclick = startBattle;
+            
+            document.getElementById('combatLog').innerHTML = `
+                <div class="log-entry success">🔄 Game reset! Ready for another battle...</div>
+                <div class="log-entry">📋 All weapons have been restocked with full ammo!</div>
+                <div class="log-entry warning">⚠️ Select your strategy and engage the undead!</div>
+            `;
+            
+            updateUI();
+            populateWeapons();
+            
+            addLogEntry("🎯 New battle ready! Good luck, survivor!", "success");
+        }
+
+        window.onload = initGame;
+        
+        console.log("🧪 TESTING COMMANDS:");
+        console.log("testScenario('knife', 0) - Knife vs Walker");
+        console.log("testScenario('pistol', 1, 0) - Empty pistol vs Runner");
+        console.log("testScenario('shotgun', 2) - Shotgun vs Brute");
+        console.log("toggleDayNight() - Switch day/night mode");
+    </script>
+</body>
+</html>

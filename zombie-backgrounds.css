@@ -1,0 +1,316 @@
+/* 🧟‍♂️ ZOMBIE STREET SHOOTOUT - BACKGROUND THEMES 🧟‍♂️ */
+
+/* Night Mode Backgrounds */
+.night-city-background {
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(255, 0, 64, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 255, 65, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #2d2d2d 100%);
+    background-size: 400px 400px, 300px 300px, 500px 500px, 100% 100%;
+    background-attachment: fixed;
+}
+
+.night-street-background {
+    background-image: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 98px,
+            rgba(255, 0, 64, 0.1) 100px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 98px,
+            rgba(0, 255, 65, 0.1) 100px
+        ),
+        linear-gradient(135deg, #0f0f0f 0%, #1c1c1c 50%, #2a2a2a 100%);
+    background-size: 100px 100px, 100px 100px, 100% 100%;
+}
+
+/* Day Mode Backgrounds */
+.day-city-background {
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(52, 152, 219, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(46, 204, 113, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(241, 196, 15, 0.2) 0%, transparent 50%),
+        linear-gradient(135deg, #87CEEB 0%, #B0E0E6 50%, #F0F8FF 100%);
+    background-size: 400px 400px, 300px 300px, 500px 500px, 100% 100%;
+    background-attachment: fixed;
+}
+
+.day-street-background {
+    background-image: 
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 98px,
+            rgba(52, 152, 219, 0.1) 100px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 98px,
+            rgba(46, 204, 113, 0.1) 100px
+        ),
+        linear-gradient(135deg, #E8F4FD 0%, #C3E8F4 50%, #A8D8F0 100%);
+    background-size: 100px 100px, 100px 100px, 100% 100%;
+}
+
+/* Apocalypse Effects */
+.apocalypse-fog::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at top, transparent 0%, rgba(0, 0, 0, 0.3) 70%),
+        radial-gradient(ellipse at bottom, transparent 0%, rgba(255, 0, 64, 0.1) 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Zombie Blood Stains */
+.blood-stain-1 {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(circle, #8B0000 0%, #4B0000 50%, transparent 70%);
+    border-radius: 50% 40% 50% 40%;
+    opacity: 0.6;
+    top: 20%;
+    left: 15%;
+    transform: rotate(45deg);
+}
+
+.blood-stain-2 {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: radial-gradient(circle, #8B0000 0%, #4B0000 50%, transparent 70%);
+    border-radius: 40% 50% 40% 50%;
+    opacity: 0.5;
+    top: 60%;
+    right: 20%;
+    transform: rotate(-30deg);
+}
+
+.blood-stain-3 {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #8B0000 0%, #4B0000 50%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0.4;
+    bottom: 30%;
+    left: 40%;
+}
+
+/* Animated Zombie Shadows */
+@keyframes zombieShadow {
+    0%, 100% { 
+        transform: scale(1) translateX(0); 
+        opacity: 0.1; 
+    }
+    50% { 
+        transform: scale(1.1) translateX(10px); 
+        opacity: 0.2; 
+    }
+}
+
+.zombie-shadow {
+    position: fixed;
+    width: 100px;
+    height: 150px;
+    background: 
+        radial-gradient(ellipse at center top, rgba(0, 0, 0, 0.3) 0%, transparent 70%),
+        linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: zombieShadow 8s infinite linear;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.zombie-shadow:nth-child(1) {
+    top: 10%;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.zombie-shadow:nth-child(2) {
+    top: 40%;
+    right: -50px;
+    animation-delay: 3s;
+    animation-direction: reverse;
+}
+
+.zombie-shadow:nth-child(3) {
+    bottom: 20%;
+    left: -50px;
+    animation-delay: 6s;
+}
+
+/* Bullet Holes */
+.bullet-hole {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #000 0%, #333 40%, transparent 60%);
+    border-radius: 50%;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.8);
+}
+
+.bullet-hole:nth-child(1) {
+    top: 25%;
+    left: 30%;
+}
+
+.bullet-hole:nth-child(2) {
+    top: 45%;
+    right: 25%;
+}
+
+.bullet-hole:nth-child(3) {
+    bottom: 35%;
+    left: 60%;
+}
+
+.bullet-hole:nth-child(4) {
+    top: 70%;
+    left: 20%;
+}
+
+/* Cracked Glass Effect */
+.cracked-glass::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%),
+        linear-gradient(-45deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%),
+        linear-gradient(25deg, transparent 45%, rgba(255, 255, 255, 0.05) 50%, transparent 55%);
+    background-size: 200px 200px, 150px 150px, 300px 300px;
+    pointer-events: none;
+}
+
+/* Abandoned Building Windows */
+.building-windows {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 80px,
+            rgba(255, 215, 0, 0.05) 82px,
+            rgba(255, 215, 0, 0.05) 120px,
+            transparent 122px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 120px,
+            rgba(255, 215, 0, 0.03) 122px,
+            rgba(255, 215, 0, 0.03) 160px,
+            transparent 162px
+        );
+    pointer-events: none;
+    z-index: -2;
+}
+
+/* Flickering Street Lights */
+@keyframes flicker {
+    0%, 20%, 24%, 55%, 100% { opacity: 1; }
+    21%, 23%, 56%, 57% { opacity: 0.5; }
+}
+
+.street-light {
+    position: fixed;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: flicker 4s infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.street-light:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.street-light:nth-child(2) {
+    top: 20%;
+    right: 15%;
+    animation-delay: 1.5s;
+}
+
+.street-light:nth-child(3) {
+    bottom: 30%;
+    left: 20%;
+    animation-delay: 3s;
+}
+
+/* Rain Effect for Night Mode */
+@keyframes rain {
+    0% { 
+        transform: translateY(-100vh) translateX(0); 
+        opacity: 1; 
+    }
+    100% { 
+        transform: translateY(100vh) translateX(-50px); 
+        opacity: 0; 
+    }
+}
+
+.rain-drop {
+    position: fixed;
+    width: 2px;
+    height: 15px;
+    background: linear-gradient(to bottom, transparent, rgba(135, 206, 235, 0.6), transparent);
+    animation: rain 2s infinite linear;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Sun Rays for Day Mode */
+@keyframes sunRays {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.sun-rays {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    background: 
+        linear-gradient(45deg, transparent 40%, rgba(255, 215, 0, 0.2) 50%, transparent 60%),
+        linear-gradient(-45deg, transparent 40%, rgba(255, 215, 0, 0.2) 50%, transparent 60%),
+        linear-gradient(90deg, transparent 40%, rgba(255, 215, 0, 0.1) 50%, transparent 60%),
+        linear-gradient(0deg, transparent 40%, rgba(255, 215, 0, 0.1) 50%, transparent 60%);
+    border-radius: 50%;
+    animation: sunRays 20s infinite linear;
+    pointer-events: none;
+    z-index: -1;
+}
+
+body.day-mode .sun-rays {
+    display: block;
+}
+
+body:not(.day-mode) .sun-rays {
+    display: none;
+}
